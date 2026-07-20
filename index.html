@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trash Games - PS2 AI Games</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0f0f13;
+            color: #e0e0e0;
+        }
+
+        /* --- MENÚ NAVEGACIÓN --- */
+        header {
+            background-color: #16161e;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid #ff0055;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo-nav {
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: #ff0055;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: #a0a0b0;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #00ffcc;
+        }
+
+        .lang-select {
+            background-color: #1a1a24;
+            color: #00ffcc;
+            border: 1px solid #00ffcc;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* --- BANNER GAMER --- */
+        .hero-banner {
+            position: relative;
+            height: 350px;
+            background: linear-gradient(180deg, rgba(15,15,19,0.5) 0%, rgba(15,15,19,0.95) 100%),
+                        url('https://staticg.sportskeeda.com/editor/2025/01/8827f-17376979472538-1920.jpg?w=640');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-bottom: 2px solid #282838;
+            padding: 0 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .hero-banner.hidden {
+            display: none;
+        }
+
+        .hero-banner h1 {
+            font-size: 3.5rem;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(255, 0, 85, 0.8), 0 0 30px rgba(0, 255, 204, 0.6);
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .hero-banner p {
+            font-size: 1.2rem;
+            color: #00ffcc;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .page-section {
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* --- BUSCADOR --- */
+        .search-container {
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            background-color: #1a1a24;
+            border: 1px solid #2a2a3a;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #00ffcc;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+        }
+
+        /* --- GRID DE JUEGOS --- */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .game-card {
+            background-color: #1a1a24;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #2a2a3a;
+            transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: #00ffcc;
+        }
+
+        .game-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            background-color: #0a0a0f;
+        }
+
+        .game-info {
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .game-title {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .game-desc {
+            font-size: 0.9rem;
+            color: #9090a0;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .game-btn {
+            display: inline-block;
+            text-align: center;
+            background-color: #ff0055;
+            color: #fff;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+
+        .game-btn:hover {
+            background-color: #e0004c;
+        }
+
+        /* --- PÁGINA DE DETALLE --- */
+        .back-btn {
+            background: #1a1a24;
+            color: #00ffcc;
+            border: 1px solid #00ffcc;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 2rem;
+            font-weight: bold;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background-color: #00ffcc;
+            color: #0f0f13;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+        }
+
+        .game-detail-card {
+            background: linear-gradient(145deg, #181822 0%, #12121a 100%);
+            border: 1px solid #282838;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .game-detail-logo {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid #ff0055;
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.3);
+            flex-shrink: 0;
+        }
+
+        .game-detail-meta {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .game-detail-meta h2 {
+            font-size: 2.2rem;
+            color: #fff;
+            margin-bottom: 0.8rem;
+        }
+
+        .game-detail-meta p {
+            color: #a0a0b0;
+            line-height: 1.6;
+            font-size: 1.05rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .download-btn {
+            background: linear-gradient(90deg, #00ffcc 0%, #00b386 100%);
+            color: #0f0f13;
+            padding: 0.9rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-decoration: none;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(0, 255, 204, 0.6);
+        }
+
+        .screenshots-section h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1.2rem;
+            color: #00ffcc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-left: 4px solid #ff0055;
+            padding-left: 0.8rem;
+        }
+
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .screenshots-grid img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #2a2a3a;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .screenshots-grid img:hover {
+            transform: scale(1.03);
+            border-color: #00ffcc;
+        }
+
+        /* --- OTRAS SECCIONES --- */
+        .content-box {
+            background-color: #1a1a24;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #2a2a3a;
+            line-height: 1.6;
+        }
+
+        .discord-tag {
+            display: inline-block;
+            background-color: #5865F2;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MENÚ SUPERIOR -->
+    <header>
+        <nav>
+            <div class="logo-nav" onclick="showPage('inicio')">Trash Games</div>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a onclick="showPage('inicio')" id="link-inicio" class="active" data-i18n="nav_games">Juegos</a></li>
+                    <li><a onclick="showPage('sobre-mi')" id="link-sobre-mi" data-i18n="nav_about">Sobre mí</a></li>
+                    <li><a onclick="showPage('contacto')" id="link-contacto" data-i18n="nav_contact">Contacto</a></li>
+                </ul>
+                <select class="lang-select" onchange="changeLanguage(this.value)">
+                    <option value="es">ES</option>
+                    <option value="en">EN</option>
+                    <option value="pt">PT</option>
+                </select>
+            </div>
+        </nav>
+    </header>
+
+    <!-- BANNER GAMER -->
+    <section class="hero-banner" id="main-banner">
+        <h1>TRASH GAMES</h1>
+        <p data-i18n="banner_subtitle">Juegos e inventos para PS2 creados con Inteligencia Artificial</p>
+    </section>
+
+    <main>
+        <!-- SECCIÓN 1: INICIO Y LISTA DE JUEGOS -->
+        <section id="inicio" class="page-section active">
+            <h2 data-i18n="title_all_games">Todos los Juegos</h2>
+            
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="Buscar juego..." oninput="filtrarJuegos()" data-i18n-ph="search_placeholder">
+            </div>
+
+            <div class="games-grid" id="games-container">
+                <!-- Carga dinámica -->
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: DETALLE DEL JUEGO -->
+        <section id="detalle-juego" class="page-section">
+            <button class="back-btn" onclick="showPage('inicio')" data-i18n="btn_back">← Volver a la lista</button>
+            
+            <div class="game-detail-card">
+                <img id="detail-logo" src="" alt="Logo" class="game-detail-logo">
+                <div class="game-detail-meta">
+                    <h2 id="detail-title">Nombre del Juego</h2>
+                    <p id="detail-desc">Descripción del juego...</p>
+                    <a id="detail-download" href="#" target="_blank" class="download-btn" data-i18n="btn_download">Descargar Juego (ISO)</a>
+                </div>
+            </div>
+
+            <div class="screenshots-section">
+                <h3 data-i18n="title_screenshots">Capturas de pantalla</h3>
+                <div class="screenshots-grid" id="detail-screenshots">
+                    <!-- Capturas dinámicas -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: SOBRE MÍ -->
+        <section id="sobre-mi" class="page-section">
+            <div class="content-box">
+                <h2 data-i18n="about_title">Sobre el Proyecto</h2>
+                <br>
+                <p data-i18n="about_text">¡Buenas! Esta es mi web para publicar mis juegos y proyectos creados con Inteligencia Artificial enfocados en la PlayStation 2 (PS2). Me dedico a experimentar generando código, assets y mecánicas usando IA para llevar ideas locas y prototipos a hardware retro. ¡Espero que disfrutes probando estas creaciones!</p>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4: CONTACTO -->
+        <section id="contacto" class="page-section">
+            <div class="content-box">
+                <h2 data-i18n="contact_title">Contacto</h2>
+                <br>
+                <p data-i18n="contact_text">Si quieres comunicarte conmigo, reportar un error de algún juego o dar ideas para futuros proyectos de PS2, me puedes encontrar en Discord:</p>
+                <br>
+                <div class="discord-tag">Discord: bellaco69</div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // ========================================================
+        // 1. DICCIONARIO DE TRADUCCIONES (ES, EN, PT)
+        // ========================================================
+        const translations = {
+            es: {
+                nav_games: "Juegos",
+                nav_about: "Sobre mí",
+                nav_contact: "Contacto",
+                banner_subtitle: "Juegos e inventos para PS2 creados con Inteligencia Artificial",
+                title_all_games: "Todos los Juegos",
+                search_placeholder: "Buscar juego para PS2...",
+                btn_more: "Ver más",
+                btn_back: "← Volver a la lista",
+                btn_download: "Descargar Juego (ISO)",
+                title_screenshots: "Capturas de pantalla",
+                about_title: "Sobre el Proyecto",
+                about_text: "¡Buenas! Esta es mi web para publicar mis juegos y proyectos creados con Inteligencia Artificial enfocados en la PlayStation 2 (PS2). Me dedico a experimentar generando código, assets y mecánicas usando IA para llevar ideas locas y prototipos a hardware retro. ¡Espero que disfrutes probando estas creaciones!",
+                contact_title: "Contacto",
+                contact_text: "Si quieres comunicarte conmigo, reportar un error de algún juego o dar ideas para futuros proyectos de PS2, me puedes encontrar en Discord:"
+            },
+            en: {
+                nav_games: "Games",
+                nav_about: "About me",
+                nav_contact: "Contact",
+                banner_subtitle: "PS2 games and experiments created with Artificial Intelligence",
+                title_all_games: "All Games",
+                search_placeholder: "Search PS2 game...",
+                btn_more: "View more",
+                btn_back: "← Back to list",
+                btn_download: "Download Game (ISO)",
+                title_screenshots: "Screenshots",
+                about_title: "About the Project",
+                about_text: "Hey there! This is my website to release my games and projects created with Artificial Intelligence focused on the PlayStation 2 (PS2). I experiment with code generation, assets, and mechanics using AI to bring wild ideas and prototypes to retro hardware. Hope you enjoy trying them out!",
+                contact_title: "Contact",
+                contact_text: "If you want to get in touch with me, report a bug in any game, or suggest ideas for future PS2 projects, hit me up on Discord:"
+            },
+            pt: {
+                nav_games: "Jogos",
+                nav_about: "Sobre mim",
+                nav_contact: "Contato",
+                banner_subtitle: "Jogos e experimentos para PS2 criados com Inteligência Artificial",
+                title_all_games: "Todos os Jogos",
+                search_placeholder: "Buscar jogo de PS2...",
+                btn_more: "Ver mais",
+                btn_back: "← Voltar à lista",
+                btn_download: "Baixar Jogo (ISO)",
+                title_screenshots: "Capturas de tela",
+                about_title: "Sobre o Projeto",
+                about_text: "Olá! Este é o meu site para publicar meus jogos e projetos criados com Inteligência Artificial focados no PlayStation 2 (PS2). Experimento gerar código, assets e mecânicas usando IA para trazer ideias malucas e protótipos para o hardware retro. Espero que goste de testar!",
+                contact_title: "Contato",
+                contact_text: "Se você quiser falar comigo, relatar um bug ou sugerir ideias para futuros projetos de PS2, pode me encontrar no Discord:"
+            }
+        };
+
+        let currentLang = 'es';
+
+        // ========================================================
+        // 2. BASE DE DATOS DE JUEGOS
+        // ========================================================
+        const juegosJSON = [
+            {
+                "id": 1,
+                "titulo": "PS2 AI FPS Demo",
+                "descripcion": "Un prototipo shooter en primera persona para PS2 generado con soporte de código IA.",
+                "logo": "https://via.placeholder.com/150/ff0055/ffffff?text=PS2+FPS",
+                "portada": "https://via.placeholder.com/400x200/1a1a24/00ffcc?text=PS2+FPS+Game",
+                "descargaUrl": "#",
+                "imagenes": [
+                    "https://via.placeholder.com/600x400/1a1a24/00ffcc?text=Captura+1",
+                    "https://via.placeholder.com/600x400/2a2a3a/00ffcc?text=Captura+2"
+                ]
+            },
+            {
+                "id": 2,
+                "titulo": "Together PS2 Edition",
+                "descripcion": "Un experimento estilo party game adaptado y optimizado para consola PS2.",
+                "logo": "https://via.placeholder.com/150/00ffcc/0f0f13?text=Together",
+                "portada": "https://via.placeholder.com/400x200/1a1a24/ff0055?text=Together+PS2",
+                "descargaUrl": "#",
+                "imagenes": [
+                    "https://via.placeholder.com/600x400/1a1a24/ff0055?text=Gameplay+1",
+                    "https://via.placeholder.com/600x400/2a2a3a/ff0055?text=Gameplay+2"
+                ]
+            }
+        ];
+
+        // ========================================================
+        // 3. RENDERIZADO Y BUSCADOR DE JUEGOS
+        // ========================================================
+        function cargarJuegos(lista = juegosJSON) {
+            const container = document.getElementById('games-container');
+            container.innerHTML = '';
+
+            if (lista.length === 0) {
+                container.innerHTML = `<p style="color: #888;">No se encontraron juegos.</p>`;
+                return;
+            }
+
+            lista.forEach(juego => {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.onclick = (e) => {
+                    if(e.target.tagName !== 'BUTTON') {
+                        abrirDetalleJuego(juego.id);
+                    }
+                };
+
+                card.innerHTML = `
+                    <img src="${juego.portada}" alt="${juego.titulo}">
+                    <div class="game-info">
+                        <h3 class="game-title">${juego.titulo}</h3>
+                        <p class="game-desc">${juego.descripcion}</p>
+                        <button class="game-btn" onclick="abrirDetalleJuego(${juego.id})">${translations[currentLang].btn_more}</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filtrarJuegos() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtrados = juegosJSON.filter(juego => 
+                juego.titulo.toLowerCase().includes(query) || 
+                juego.descripcion.toLowerCase().includes(query)
+            );
+            cargarJuegos(filtrados);
+        }
+
+        // ========================================================
+        // 4. DETALLE DE JUEGOS
+        // ========================================================
+        function abrirDetalleJuego(id) {
+            const juego = juegosJSON.find(j => j.id === id);
+            if (!juego) return;
+
+            document.getElementById('detail-title').innerText = juego.titulo;
+            document.getElementById('detail-desc').innerText = juego.descripcion;
+            document.getElementById('detail-logo').src = juego.logo;
+            document.getElementById('detail-download').href = juego.descargaUrl;
+
+            const screenshotsContainer = document.getElementById('detail-screenshots');
+            screenshotsContainer.innerHTML = '';
+            juego.imagenes.forEach(imgUrl => {
+                const img = document.createElement('img');
+                img.src = imgUrl;
+                img.alt = `Captura de ${juego.titulo}`;
+                screenshotsContainer.appendChild(img);
+            });
+
+            showPage('detalle-juego');
+        }
+
+        // ========================================================
+        // 5. CAMBIO DE IDIOMA
+        // ========================================================
+        function changeLanguage(lang) {
+            currentLang = lang;
+            
+            // Actualizar textos con atributo data-i18n
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    element.innerText = translations[lang][key];
+                }
+            });
+
+            // Actualizar placeholders
+            document.querySelectorAll('[data-i18n-ph]').forEach(element => {
+                const key = element.getAttribute('data-i18n-ph');
+                if (translations[lang][key]) {
+                    element.placeholder = translations[lang][key];
+                }
+            });
+
+            // Re-renderizar lista de juegos para actualizar botones
+            filtrarJuegos();
+        }
+
+        // ========================================================
+        // 6. NAVEGACIÓN Y BANNER
+        // ========================================================
+        function showPage(pageId) {
+            const banner = document.getElementById('main-banner');
+            if (pageId === 'detalle-juego') {
+                banner.classList.add('hidden');
+            } else {
+                banner.classList.remove('hidden');
+            }
+
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            document.getElementById(pageId).classList.add('active');
+
+            const activeLink = document.getElementById(`link-${pageId}`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Inicializar
+        cargarJuegos();
+    </script>
+</body>
+</html>
